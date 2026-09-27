@@ -20,7 +20,13 @@ class CustomerController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate(["name" => "required|string|max:255", "phone" => "nullable|string|max:30", "email" => "nullable|email", "address" => "nullable|string", "status" => "boolean"]);
+        $data = $request->validate([
+            "name" => "required|string|max:255",
+            "phone" => "nullable|string|max:30",
+            "email" => "nullable|email",
+            "address" => "nullable|string",
+            "status" => "boolean"
+        ]);
         if (array_key_exists("name", $data) && \Illuminate\Support\Facades\Schema::hasColumn("customers", "slug")) {
             $data["slug"] = Str::slug($data["name"]) . "-" . Str::random(4);
         }
@@ -33,7 +39,13 @@ class CustomerController extends Controller
 
     public function update(Request $request, Customer $customer)
     {
-        $data = $request->validate(["name" => "required|string|max:255", "phone" => "nullable|string|max:30", "email" => "nullable|email", "address" => "nullable|string", "status" => "boolean"]);
+        $data = $request->validate([
+            "name" => "required|string|max:255",
+            "phone" => "nullable|string|max:30",
+            "email" => "nullable|email",
+            "address" => "nullable|string",
+            "status" => "boolean"
+        ]);
         $customer->update($data);
         ActivityLog::record("updated", "Customer", "Updated customers: " . ($customer->name ?? $customer->id));
 

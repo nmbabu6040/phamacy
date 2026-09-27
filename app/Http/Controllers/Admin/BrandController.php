@@ -20,22 +20,35 @@ class BrandController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate(["name" => "required|string|max:255", "logo" => "nullable|image|max:2048"]);
-        if (array_key_exists("name", $data) && \Illuminate\Support\Facades\Schema::hasColumn("brands", "slug")) {
-            $data["slug"] = Str::slug($data["name"]) . "-" . Str::random(4);
+        $data = $request->validate([
+            "name" => "required|string|max:255",
+            "logo" => "nullable|image|mimes:jpeg,jpg,png,webp,gif,svg,bmp,ico,tiff,tga,jfif,avif|max:3072"
+        ]);
+        $data["slug"] = Str::slug($data["name"]) . "-" . Str::random(4);
+
+        if ($request->hasFile("logo")) {
+            $data["logo"] = $request->file("logo")->store("brands", "public");
         }
 
         $item = Brand::create($data);
-        ActivityLog::record("created", "Brand", "Created brands: " . ($item->name ?? $item->id));
+        ActivityLog::record("created", "Brand", "Created brand: {$item->name}");
 
         return back()->with("success", "Brand created successfully.");
     }
 
     public function update(Request $request, Brand $brand)
     {
-        $data = $request->validate(["name" => "required|string|max:255", "logo" => "nullable|image|max:2048"]);
+        $data = $request->validate([
+            "name" => "required|string|max:255",
+            "logo" => "nullable|image|mimes:jpeg,jpg,png,webp,gif,svg,bmp,ico,tiff,tga,jfif,avif|max:3072"
+        ]);
+
+        if ($request->hasFile("logo")) {
+            $data["logo"] = $request->file("logo")->store("brands", "public");
+        }
+
         $brand->update($data);
-        ActivityLog::record("updated", "Brand", "Updated brands: " . ($brand->name ?? $brand->id));
+        ActivityLog::record("updated", "Brand", "Updated brand: {$brand->name}");
 
         return back()->with("success", "Brand updated successfully.");
     }

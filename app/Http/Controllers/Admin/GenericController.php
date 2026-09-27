@@ -20,7 +20,11 @@ class GenericController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate(["name" => "required|string|max:255|unique:generics,name", "description" => "nullable|string"]);
+        $data = $request->validate([
+            "name" => "required|string|max:255|unique:generics,name",
+            "description" => "nullable|string"
+        ]);
+
         if (array_key_exists("name", $data) && \Illuminate\Support\Facades\Schema::hasColumn("generics", "slug")) {
             $data["slug"] = Str::slug($data["name"]) . "-" . Str::random(4);
         }
@@ -33,7 +37,10 @@ class GenericController extends Controller
 
     public function update(Request $request, Generic $generic)
     {
-        $data = $request->validate(["name" => "required|string|max:255|unique:generics,name", "description" => "nullable|string"]);
+        $data = $request->validate([
+            "name" => "required|string|max:255|unique:generics,name",
+            "description" => "nullable|string"
+        ]);
         $generic->update($data);
         ActivityLog::record("updated", "Generic", "Updated generics: " . ($generic->name ?? $generic->id));
 

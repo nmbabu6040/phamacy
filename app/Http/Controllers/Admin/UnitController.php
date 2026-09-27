@@ -20,7 +20,10 @@ class UnitController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate(["name" => "required|string|max:100", "short_name" => "required|string|max:20"]);
+        $data = $request->validate([
+            "name" => "required|string|max:100",
+            "short_name" => "required|string|max:20"
+        ]);
         if (array_key_exists("name", $data) && \Illuminate\Support\Facades\Schema::hasColumn("units", "slug")) {
             $data["slug"] = Str::slug($data["name"]) . "-" . Str::random(4);
         }
@@ -33,7 +36,10 @@ class UnitController extends Controller
 
     public function update(Request $request, Unit $unit)
     {
-        $data = $request->validate(["name" => "required|string|max:100", "short_name" => "required|string|max:20"]);
+        $data = $request->validate([
+            "name" => "required|string|max:100",
+            "short_name" => "required|string|max:20"
+        ]);
         $unit->update($data);
         ActivityLog::record("updated", "Unit", "Updated units: " . ($unit->name ?? $unit->id));
 

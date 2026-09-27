@@ -17,6 +17,10 @@ class Sale extends Model
 
     public function customer(): BelongsTo { return $this->belongsTo(Customer::class); }
     public function branch(): BelongsTo { return $this->belongsTo(Branch::class); }
+    public function courierBooking(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(CourierBooking::class);
+    }
     public function items(): HasMany { return $this->hasMany(SaleItem::class); }
     public function creator(): BelongsTo { return $this->belongsTo(User::class, "created_by"); }
 }

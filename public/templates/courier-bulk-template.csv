@@ -1,0 +1,3 @@
+invoice_reference,recipient_name,recipient_phone,recipient_address,cod_amount,weight,item_description,note
+INV-0001,Rahim Uddin,01710000001,"House 5, Road 2, Dhanmondi, Dhaka",850,0.5,Medicine order,Call before delivery
+INV-0002,Karim Hossain,01710000002,"Flat 3B, Sector 7, Uttara, Dhaka",1200,0.8,Medicine order,

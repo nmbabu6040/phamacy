@@ -20,7 +20,14 @@ class SupplierController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate(["name" => "required|string|max:255", "company_name" => "nullable|string|max:255", "phone" => "nullable|string|max:30", "email" => "nullable|email", "address" => "nullable|string", "status" => "boolean"]);
+        $data = $request->validate([
+            "name" => "required|string|max:255",
+            "company_name" => "nullable|string|max:255",
+            "phone" => "nullable|string|max:30",
+            "email" => "nullable|email",
+            "address" => "nullable|string",
+            "status" => "boolean"
+        ]);
         if (array_key_exists("name", $data) && \Illuminate\Support\Facades\Schema::hasColumn("suppliers", "slug")) {
             $data["slug"] = Str::slug($data["name"]) . "-" . Str::random(4);
         }
@@ -33,7 +40,14 @@ class SupplierController extends Controller
 
     public function update(Request $request, Supplier $supplier)
     {
-        $data = $request->validate(["name" => "required|string|max:255", "company_name" => "nullable|string|max:255", "phone" => "nullable|string|max:30", "email" => "nullable|email", "address" => "nullable|string", "status" => "boolean"]);
+        $data = $request->validate([
+            "name" => "required|string|max:255",
+            "company_name" => "nullable|string|max:255",
+            "phone" => "nullable|string|max:30",
+            "email" => "nullable|email",
+            "address" => "nullable|string",
+            "status" => "boolean"
+        ]);
         $supplier->update($data);
         ActivityLog::record("updated", "Supplier", "Updated suppliers: " . ($supplier->name ?? $supplier->id));
 

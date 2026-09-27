@@ -34,7 +34,7 @@
             @if($sale->customer_email)<p class="mb-1"><i class="bi bi-envelope"></i> {{ $sale->customer_email }}</p>@endif
             <p class="mb-0"><i class="bi bi-geo-alt"></i> {{ $sale->shipping_address }}</p>
         </div></div>
-        <div class="card"><div class="card-header fw-bold">Order Status</div><div class="card-body">
+        <div class="card mb-3"><div class="card-header fw-bold">Order Status</div><div class="card-body">
             <form action="{{ route('admin.orders.status', $sale) }}" method="POST">
                 @csrf
                 <select name="order_status" class="form-select mb-2">
@@ -44,6 +44,27 @@
                 </select>
                 <button class="btn btn-primary w-100">Update Status</button>
             </form>
+        </div></div>
+
+        <div class="card"><div class="card-header fw-bold"><i class="bi bi-truck"></i> Courier</div><div class="card-body">
+            @if($sale->courierBooking)
+                <p class="mb-1"><b>{{ $sale->courierBooking->providerLabel() }}</b></p>
+                <p class="mb-1 small">Consignment: {{ $sale->courierBooking->consignment_id ?? "pending" }}</p>
+                <span class="badge bg-info text-dark">{{ ucfirst(str_replace('_',' ',$sale->courierBooking->status)) }}</span>
+                <form action="{{ route('admin.courier.refresh', $sale->courierBooking) }}" method="POST" class="mt-2">@csrf
+                    <button class="btn btn-sm btn-outline-secondary w-100"><i class="bi bi-arrow-repeat"></i> Refresh Status</button>
+                </form>
+            @else
+                <form action="{{ route('admin.courier.book', $sale) }}" method="POST">
+                    @csrf
+                    <select name="provider" class="form-select mb-2" required>
+                        @foreach(\App\Services\Couriers\CourierManager::available() as $key => $label)
+                            <option value="{{ $key }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    <button class="btn btn-success w-100"><i class="bi bi-truck"></i> Book Courier</button>
+                </form>
+            @endif
         </div></div>
     </div>
 </div>
