@@ -171,10 +171,32 @@
                 <div class="col-lg-3">
                     <h6 class="text-white mb-3">Newsletter</h6>
                     <p class="small">Subscribe for health tips &amp; special offers.</p>
-                    <form class="d-flex gap-2">
-                        <input type="email" class="form-control form-control-sm" placeholder="Your email">
-                        <button class="btn btn-primary btn-sm">Join</button>
+                    <form action="{{ route('newsletter.subscribe') }}" method="POST" class="d-flex gap-2">
+                        @csrf
+
+                        <input type="email" name="email" class="form-control form-control-sm"
+                            placeholder="Your email" value="{{ old('email') }}" required>
+
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            Join
+                        </button>
                     </form>
+
+                    @if (session('newsletter_success'))
+                        <div class="alert alert-success alert-dismissible fade show mt-2 py-2 small" role="alert">
+
+                            <i class="bi bi-check-circle me-1"></i>
+                            {{ session('newsletter_success') }}
+
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+
+                    @error('email')
+                        <div class="text-danger small mt-2">
+                            {{ $message }}
+                        </div>
+                    @enderror
                 </div>
             </div>
         </div>

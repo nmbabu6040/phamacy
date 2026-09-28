@@ -235,3 +235,26 @@ body {
         margin-left: calc(var(--sidebar-w) * -1);
     }
 }
+
+@media print {
+    .sidebar,
+    .topbar,
+    #sidebarToggle,
+    .no-print,
+    .btn,
+    form button,
+    .card-footer nav,
+    .alert {
+        display: none !important;
+    }
+    .main-content,
+    .page-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+    .print-area {
+        box-shadow: none !important;
+        border: none !important;
+    }
+}

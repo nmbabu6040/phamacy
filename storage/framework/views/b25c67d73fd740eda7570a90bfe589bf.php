@@ -1,16 +1,15 @@
-@extends('layouts.admin')
-@section('title', 'Dashboard')
-@section('content')
+<?php $__env->startSection('title', 'Dashboard'); ?>
+<?php $__env->startSection('content'); ?>
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="mb-0">Welcome back, {{ auth()->user()->name }} 👋</h4> <span
-            class="text-muted">{{ now()->format('l, d M Y') }}</span>
+        <h4 class="mb-0">Welcome back, <?php echo e(auth()->user()->name); ?> 👋</h4> <span
+            class="text-muted"><?php echo e(now()->format('l, d M Y')); ?></span>
     </div> <!-- Stat cards -->
     <div class="row g-3 mb-4">
         <div class="col-xl-3 col-md-6">
             <div class="stat-card bg-primary-soft">
                 <div class="stat-icon text-primary"><i class="bi bi-cash-coin"></i></div>
                 <div>
-                    <div class="stat-value">৳{{ number_format($todaySales, 2) }}</div>
+                    <div class="stat-value">৳<?php echo e(number_format($todaySales, 2)); ?></div>
                     <div class="stat-label">Today's Sales</div>
                 </div>
             </div>
@@ -19,7 +18,7 @@
             <div class="stat-card bg-success-soft">
                 <div class="stat-icon text-success"><i class="bi bi-graph-up-arrow"></i></div>
                 <div>
-                    <div class="stat-value">৳{{ number_format($monthProfit, 2) }}</div>
+                    <div class="stat-value">৳<?php echo e(number_format($monthProfit, 2)); ?></div>
                     <div class="stat-label">This Month Profit</div>
                 </div>
             </div>
@@ -28,7 +27,7 @@
             <div class="stat-card bg-warning-soft">
                 <div class="stat-icon text-warning"><i class="bi bi-exclamation-triangle"></i></div>
                 <div>
-                    <div class="stat-value">{{ $lowStockCount }}</div>
+                    <div class="stat-value"><?php echo e($lowStockCount); ?></div>
                     <div class="stat-label">Low Stock Items</div>
                 </div>
             </div>
@@ -37,7 +36,7 @@
             <div class="stat-card bg-danger-soft">
                 <div class="stat-icon text-danger"><i class="bi bi-wallet2"></i></div>
                 <div>
-                    <div class="stat-value">৳{{ number_format($totalDue, 2) }}</div>
+                    <div class="stat-value">৳<?php echo e(number_format($totalDue, 2)); ?></div>
                     <div class="stat-label">Total Due (Sales)</div>
                 </div>
             </div>
@@ -46,22 +45,22 @@
     <div class="row g-3 mb-4">
         <div class="col-xl-3 col-md-6">
             <div class="mini-card"><i class="bi bi-calendar3 text-primary"></i>
-                <div><b>৳{{ number_format($monthSales, 2) }}</b><span>This Month Sales</span></div>
+                <div><b>৳<?php echo e(number_format($monthSales, 2)); ?></b><span>This Month Sales</span></div>
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
             <div class="mini-card"><i class="bi bi-calendar-check text-info"></i>
-                <div><b>৳{{ number_format($yearSales, 2) }}</b><span>This Year Sales</span></div>
+                <div><b>৳<?php echo e(number_format($yearSales, 2)); ?></b><span>This Year Sales</span></div>
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
             <div class="mini-card"><i class="bi bi-truck text-secondary"></i>
-                <div><b>৳{{ number_format($monthPurchase, 2) }}</b><span>This Month Purchase</span></div>
+                <div><b>৳<?php echo e(number_format($monthPurchase, 2)); ?></b><span>This Month Purchase</span></div>
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
             <div class="mini-card"><i class="bi bi-box-seam text-dark"></i>
-                <div><b>{{ $totalProducts }}</b><span>Total Products</span></div>
+                <div><b><?php echo e($totalProducts); ?></b><span>Total Products</span></div>
             </div>
         </div>
     </div> <!-- Charts -->
@@ -98,11 +97,11 @@
             <div class="card h-100">
                 <div class="card-header fw-bold text-danger"><i class="bi bi-exclamation-circle"></i> Low Stock Alerts</div>
                 <ul class="list-group list-group-flush">
-                    @forelse($lowStockProducts as $p)
-                        <li class="list-group-item d-flex justify-content-between"><span>{{ $p->name }}</span><span
-                            class="badge bg-danger">{{ $p->stock_qty }} left</span></li> @empty <li
+                    <?php $__empty_1 = true; $__currentLoopData = $lowStockProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $p): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                        <li class="list-group-item d-flex justify-content-between"><span><?php echo e($p->name); ?></span><span
+                            class="badge bg-danger"><?php echo e($p->stock_qty); ?> left</span></li> <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?> <li
                             class="list-group-item text-muted">No low stock items 🎉</li>
-                    @endforelse
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>
@@ -111,11 +110,11 @@
                 <div class="card-header fw-bold text-warning"><i class="bi bi-hourglass-split"></i> Expiring Soon (90 days)
                 </div>
                 <ul class="list-group list-group-flush">
-                    @forelse($expiringProducts as $p)
-                        <li class="list-group-item d-flex justify-content-between"><span>{{ $p->name }}</span><span
-                                class="badge bg-warning text-dark">{{ $p->expiry_date->format('d M Y') }}</span></li>
-                    @empty <li class="list-group-item text-muted">Nothing expiring soon</li>
-                    @endforelse
+                    <?php $__empty_1 = true; $__currentLoopData = $expiringProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $p): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                        <li class="list-group-item d-flex justify-content-between"><span><?php echo e($p->name); ?></span><span
+                                class="badge bg-warning text-dark"><?php echo e($p->expiry_date->format('d M Y')); ?></span></li>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?> <li class="list-group-item text-muted">Nothing expiring soon</li>
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>
@@ -123,12 +122,12 @@
             <div class="card h-100">
                 <div class="card-header fw-bold"><i class="bi bi-receipt"></i> Recent Sales</div>
                 <ul class="list-group list-group-flush">
-                    @forelse($recentSales as $s)
-                        <li class="list-group-item d-flex justify-content-between"> <span>{{ $s->invoice_no }} <small
-                                    class="text-muted">({{ $s->customer->name ?? 'Walk-in' }})</small></span>
-                            <b>৳{{ number_format($s->grand_total, 2) }}</b>
-                    </li> @empty <li class="list-group-item text-muted">No sales yet</li>
-                    @endforelse
+                    <?php $__empty_1 = true; $__currentLoopData = $recentSales; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                        <li class="list-group-item d-flex justify-content-between"> <span><?php echo e($s->invoice_no); ?> <small
+                                    class="text-muted">(<?php echo e($s->customer->name ?? 'Walk-in'); ?>)</small></span>
+                            <b>৳<?php echo e(number_format($s->grand_total, 2)); ?></b>
+                    </li> <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?> <li class="list-group-item text-muted">No sales yet</li>
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>
@@ -136,7 +135,7 @@
 
     <div class="row g-3 mt-1">
 
-        {{-- Recent Contact Messages --}}
+        
         <div class="col-xl-7">
 
             <div class="card h-100">
@@ -148,7 +147,7 @@
                         Recent Contact Messages
                     </span>
 
-                    <a href="{{ route('admin.contact-messages.index') }}" class="btn btn-sm btn-outline-primary">
+                    <a href="<?php echo e(route('admin.contact-messages.index')); ?>" class="btn btn-sm btn-outline-primary">
 
                         View All
 
@@ -158,7 +157,7 @@
 
                 <ul class="list-group list-group-flush">
 
-                    @forelse($recentContactMessages as $message)
+                    <?php $__empty_1 = true; $__currentLoopData = $recentContactMessages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $message): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <li class="list-group-item">
 
                             <div class="d-flex justify-content-between align-items-start">
@@ -167,36 +166,39 @@
 
                                     <div class="fw-semibold">
 
-                                        {{ $message->name }}
+                                        <?php echo e($message->name); ?>
 
-                                        @if ($message->status === 'new')
+
+                                        <?php if($message->status === 'new'): ?>
                                             <span class="badge bg-danger ms-1">
                                                 New
                                             </span>
-                                        @elseif($message->status === 'read')
+                                        <?php elseif($message->status === 'read'): ?>
                                             <span class="badge bg-warning text-dark ms-1">
                                                 Read
                                             </span>
-                                        @else
+                                        <?php else: ?>
                                             <span class="badge bg-success ms-1">
                                                 Replied
                                             </span>
-                                        @endif
+                                        <?php endif; ?>
 
                                     </div>
 
                                     <div class="small text-muted">
-                                        {{ $message->email }}
+                                        <?php echo e($message->email); ?>
+
                                     </div>
 
-                                    @if ($message->subject)
+                                    <?php if($message->subject): ?>
                                         <div class="small mt-1">
-                                            <strong>{{ $message->subject }}</strong>
+                                            <strong><?php echo e($message->subject); ?></strong>
                                         </div>
-                                    @endif
+                                    <?php endif; ?>
 
                                     <div class="small text-muted mt-1">
-                                        {{ \Illuminate\Support\Str::limit($message->message, 80) }}
+                                        <?php echo e(\Illuminate\Support\Str::limit($message->message, 80)); ?>
+
                                     </div>
 
                                 </div>
@@ -204,10 +206,11 @@
                                 <div class="text-end text-nowrap">
 
                                     <small class="text-muted d-block">
-                                        {{ $message->created_at->format('d M') }}
+                                        <?php echo e($message->created_at->format('d M')); ?>
+
                                     </small>
 
-                                    <a href="{{ route('admin.contact-messages.show', $message) }}"
+                                    <a href="<?php echo e(route('admin.contact-messages.show', $message)); ?>"
                                         class="btn btn-sm btn-light mt-1">
 
                                         <i class="bi bi-eye"></i>
@@ -220,7 +223,7 @@
 
                         </li>
 
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
 
                         <li class="list-group-item text-center py-4 text-muted">
 
@@ -229,7 +232,7 @@
                             No contact messages yet.
 
                         </li>
-                    @endforelse
+                    <?php endif; ?>
 
                 </ul>
 
@@ -238,7 +241,7 @@
         </div>
 
 
-        {{-- Recent Newsletter Subscribers --}}
+        
         <div class="col-xl-5">
 
             <div class="card h-100">
@@ -250,7 +253,7 @@
                         Newsletter Subscribers
                     </span>
 
-                    <a href="{{ route('admin.newsletter-subscribers.index') }}" class="btn btn-sm btn-outline-primary">
+                    <a href="<?php echo e(route('admin.newsletter-subscribers.index')); ?>" class="btn btn-sm btn-outline-primary">
 
                         View All
 
@@ -260,7 +263,7 @@
 
                 <ul class="list-group list-group-flush">
 
-                    @forelse($recentSubscribers as $subscriber)
+                    <?php $__empty_1 = true; $__currentLoopData = $recentSubscribers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subscriber): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <li class="list-group-item">
 
                             <div class="d-flex justify-content-between align-items-center">
@@ -269,16 +272,18 @@
 
                                     <div class="fw-semibold">
 
-                                        {{ $subscriber->email }}
+                                        <?php echo e($subscriber->email); ?>
+
 
                                     </div>
 
                                     <small class="text-muted">
 
                                         Subscribed
-                                        {{ $subscriber->subscribed_at
+                                        <?php echo e($subscriber->subscribed_at
                                             ? $subscriber->subscribed_at->format('d M Y')
-                                            : $subscriber->created_at->format('d M Y') }}
+                                            : $subscriber->created_at->format('d M Y')); ?>
+
 
                                     </small>
 
@@ -286,15 +291,15 @@
 
                                 <div>
 
-                                    @if ($subscriber->status)
+                                    <?php if($subscriber->status): ?>
                                         <span class="badge bg-success">
                                             Active
                                         </span>
-                                    @else
+                                    <?php else: ?>
                                         <span class="badge bg-secondary">
                                             Inactive
                                         </span>
-                                    @endif
+                                    <?php endif; ?>
 
                                 </div>
 
@@ -302,7 +307,7 @@
 
                         </li>
 
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
 
                         <li class="list-group-item text-center py-4 text-muted">
 
@@ -311,7 +316,7 @@
                             No subscribers yet.
 
                         </li>
-                    @endforelse
+                    <?php endif; ?>
 
                 </ul>
 
@@ -321,24 +326,24 @@
 
     </div>
 
-@endsection
-@push('scripts')
+<?php $__env->stopSection(); ?>
+<?php $__env->startPush('scripts'); ?>
     <script>
         const money = (v) => "৳" + Number(v).toLocaleString();
         new Chart(document.getElementById("salesTrendChart"), {
             type: "line",
             data: {
-                labels: {!! json_encode($salesTrend->pluck('ym')) !!},
+                labels: <?php echo json_encode($salesTrend->pluck('ym')); ?>,
                 datasets: [{
                     label: "Sales",
-                    data: {!! json_encode($salesTrend->pluck('total')) !!},
+                    data: <?php echo json_encode($salesTrend->pluck('total')); ?>,
                     borderColor: "#4f46e5",
                     backgroundColor: "rgba(79,70,229,.12)",
                     fill: true,
                     tension: .35
                 }, {
                     label: "Profit",
-                    data: {!! json_encode($salesTrend->pluck('profit')) !!},
+                    data: <?php echo json_encode($salesTrend->pluck('profit')); ?>,
                     borderColor: "#10b981",
                     backgroundColor: "rgba(16,185,129,.12)",
                     fill: true,
@@ -357,9 +362,9 @@
         new Chart(document.getElementById("categoryStockChart"), {
             type: "doughnut",
             data: {
-                labels: {!! json_encode($categoryStock->pluck('category.name')) !!},
+                labels: <?php echo json_encode($categoryStock->pluck('category.name')); ?>,
                 datasets: [{
-                    data: {!! json_encode($categoryStock->pluck('value')) !!},
+                    data: <?php echo json_encode($categoryStock->pluck('value')); ?>,
                     backgroundColor: ["#4f46e5", "#10b981", "#f59e0b", "#ef4444", "#06b6d4", "#8b5cf6",
                         "#ec4899", "#14b8a6"
                     ]
@@ -377,14 +382,14 @@
         new Chart(document.getElementById("salesPurchaseChart"), {
             type: "bar",
             data: {
-                labels: {!! json_encode($last7Days->map(fn($d) => $d->format('D'))) !!},
+                labels: <?php echo json_encode($last7Days->map(fn($d) => $d->format('D'))); ?>,
                 datasets: [{
                     label: "Sales",
-                    data: {!! json_encode($dailySales) !!},
+                    data: <?php echo json_encode($dailySales); ?>,
                     backgroundColor: "#4f46e5"
                 }, {
                     label: "Purchase",
-                    data: {!! json_encode($dailyPurchase) !!},
+                    data: <?php echo json_encode($dailyPurchase); ?>,
                     backgroundColor: "#f59e0b"
                 }, ]
             },
@@ -400,9 +405,9 @@
         new Chart(document.getElementById("topProductsChart"), {
             type: "pie",
             data: {
-                labels: {!! json_encode($topProducts->pluck('product.name')) !!},
+                labels: <?php echo json_encode($topProducts->pluck('product.name')); ?>,
                 datasets: [{
-                    data: {!! json_encode($topProducts->pluck('qty')) !!},
+                    data: <?php echo json_encode($topProducts->pluck('qty')); ?>,
                     backgroundColor: ["#4f46e5", "#10b981", "#f59e0b", "#ef4444", "#06b6d4"]
                 }]
             },
@@ -416,4 +421,6 @@
             }
         });
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\pharmacy\resources\views/admin/dashboard/index.blade.php ENDPATH**/ ?>

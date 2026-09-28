@@ -7,6 +7,7 @@ use App\Models\Setting;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,6 +18,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Paginator::useBootstrap();
         // Share site settings + categories with every frontend view (guarded so it does not break before migrations run)
         View::composer(["frontend.*", "layouts.frontend"], function ($view) {
             if (Schema::hasTable("settings")) {

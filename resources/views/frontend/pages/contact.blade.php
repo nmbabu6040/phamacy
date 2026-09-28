@@ -42,17 +42,44 @@
             <div class="row g-5">
                 <div class="col-lg-6" data-aos="fade-right">
                     <h4 class="mb-3">Send us a message</h4>
+
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle me-2"></i>
+                            {{ session('success') }}
+
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <strong>Please fix the following:</strong>
+
+                            <ul class="mb-0 mt-2">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <form action="{{ route('contact.submit') }}" method="POST">
                         @csrf
                         <div class="row g-3">
-                            <div class="col-md-6"><input type="text" name="name" class="form-control"
-                                    placeholder="Your Name" required></div>
-                            <div class="col-md-6"><input type="email" name="email" class="form-control"
-                                    placeholder="Your Email" required></div>
-                            <div class="col-12"><input type="text" name="subject" class="form-control"
-                                    placeholder="Subject"></div>
+                            <div class="col-md-6">
+                                <input type="text" name="name" class="form-control" placeholder="Your Name"
+                                    value="{{ old('name') }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="email" name="email" class="form-control" placeholder="Your Email"
+                                    value="{{ old('email') }}" required>
+                            </div>
                             <div class="col-12">
-                                <textarea name="message" rows="5" class="form-control" placeholder="Your Message" required></textarea>
+                                <input type="text" name="subject" class="form-control" placeholder="Subject"
+                                    value="{{ old('subject') }}">
+                            </div>
+                            <div class="col-12">
+                                <textarea name="message" rows="5" class="form-control" placeholder="Your Message" required>{{ old('message') }}</textarea>
                             </div>
                             <div class="col-12"><button class="btn btn-primary btn-lg">Send Message</button></div>
                         </div>

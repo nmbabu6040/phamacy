@@ -28,7 +28,9 @@ use App\Http\Controllers\Admin\{
     SliderController,
     SupplierController,
     UnitController,
-    UserController
+    UserController,
+    ContactMessageController,
+    NewsletterSubscriberController
 };
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Frontend\CartController;
@@ -48,6 +50,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::post('/contact', [HomeController::class, 'contactSubmit'])->name('contact.submit');
+Route::post('/newsletter/subscribe', [HomeController::class, 'newsletterSubscribe'])
+    ->name('newsletter.subscribe');
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/shop/{product:slug}', [ShopController::class, 'show'])->name('shop.show');
 
@@ -208,6 +212,35 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'log.activity', 'cur
     Route::resource('faqs', FaqController::class)->except(['show'])->names('faqs');
     Route::resource('about-features', AboutFeatureController::class)->except(['show'])->names('about-features');
     Route::resource('about-values', AboutValueController::class)->except(['show'])->names('about-values');
+
+
+    /*
+|--------------------------------------------------------------------------
+| Contact Messages & Newsletter Subscribers
+|--------------------------------------------------------------------------
+*/
+
+    Route::get('contact-messages', [ContactMessageController::class, 'index'])
+        ->name('contact-messages.index');
+
+    Route::get('contact-messages/{contactMessage}', [ContactMessageController::class, 'show'])
+        ->name('contact-messages.show');
+
+    Route::put('contact-messages/{contactMessage}', [ContactMessageController::class, 'update'])
+        ->name('contact-messages.update');
+
+    Route::delete('contact-messages/{contactMessage}', [ContactMessageController::class, 'destroy'])
+        ->name('contact-messages.destroy');
+
+
+    Route::get('newsletter-subscribers', [NewsletterSubscriberController::class, 'index'])
+        ->name('newsletter-subscribers.index');
+
+    Route::put('newsletter-subscribers/{newsletterSubscriber}', [NewsletterSubscriberController::class, 'update'])
+        ->name('newsletter-subscribers.update');
+
+    Route::delete('newsletter-subscribers/{newsletterSubscriber}', [NewsletterSubscriberController::class, 'destroy'])
+        ->name('newsletter-subscribers.destroy');
 
     /*
     |----------------------------------------------------------------------

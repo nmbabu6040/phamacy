@@ -10,6 +10,9 @@ use App\Models\Faq;
 use App\Models\Counter;
 use App\Models\AboutFeature;
 use App\Models\AboutValue;
+use App\Models\ContactMessage;
+use App\Models\NewsletterSubscriber;
+use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
@@ -37,9 +40,63 @@ class HomeController extends Controller
         return view("frontend.pages.contact");
     }
 
-    public function contactSubmit()
+    public function contactSubmit(Request $request)
     {
-        // Contact form handling placeholder — wire up mail/notification here later.
-        return back()->with("success", "Thank you! Your message has been sent. We will get back to you soon.");
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:100'],
+            'email' => ['required', 'email', 'max:150'],
+            'subject' => ['nullable', 'string', 'max:200'],
+            'message' => ['required', 'string', 'max:5000'],
+        ]);
+
+        ContactMessage::create($validated);
+
+        return back()->with(
+            'success',
+            'Thank you! Your message has been sent successfully. We will get back to you soon.'
+        );
+    }
+
+    public function newsletterSubscribe(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email', 'max:150'],
+        ]);
+
+        $subscriber = NewsletterSubscriber::where(
+            'email',
+            $validated['email']
+        )->first();
+
+        if ($subscriber) {
+
+            if (!$subscriber->status) {
+                $subscriber->update([
+                    'status' => true,
+                    'subscribed_at' => now(),
+                ]);
+
+                return back()->with(
+                    'newsletter_success',
+                    'Welcome back! Your newsletter subscription has been reactivated.'
+                );
+            }
+
+            return back()->with(
+                'newsletter_success',
+                'This email is already subscribed to our newsletter.'
+            );
+        }
+
+        NewsletterSubscriber::create([
+            'email' => $validated['email'],
+            'status' => true,
+            'subscribed_at' => now(),
+        ]);
+
+        return back()->with(
+            'newsletter_success',
+            'Thank you! You have successfully subscribed to our newsletter.'
+        );
     }
 }
