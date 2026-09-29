@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -19,9 +20,9 @@ class SaleController extends Controller
     {
         $sales = Sale::with("customer", "branch")
             ->where("channel", "pos")
-            ->when($request->search, fn ($q) => $q->where("invoice_no", "like", "%{$request->search}%"))
-            ->when($request->from, fn ($q) => $q->whereDate("sale_date", ">=", $request->from))
-            ->when($request->to, fn ($q) => $q->whereDate("sale_date", "<=", $request->to))
+            ->when($request->search, fn($q) => $q->where("invoice_no", "like", "%{$request->search}%"))
+            ->when($request->from, fn($q) => $q->whereDate("sale_date", ">=", $request->from))
+            ->when($request->to, fn($q) => $q->whereDate("sale_date", "<=", $request->to))
             ->latest()->paginate(15)->withQueryString();
 
         return view("admin.sales.index", compact("sales"));
@@ -45,12 +46,12 @@ class SaleController extends Controller
         $branchId = app("current_branch")?->id;
 
         $products = Product::where("status", 1)
-            ->where(fn ($q) => $q->where("name", "like", "%{$term}%")
+            ->where(fn($q) => $q->where("name", "like", "%{$term}%")
                 ->orWhere("code", "like", "%{$term}%"))
             ->where("stock_qty", ">", 0)
             ->with("units.unit")
             ->limit(12)
-            ->get(["id","name","code","sale_price","stock_qty","dosage_form"]);
+            ->get(["id", "name", "code", "sale_price", "stock_qty", "dosage_form"]);
 
         // Attach branch-specific stock, and the sellable unit tiers (Piece/Strip/Box...) so the
         // cashier can pick which one to sell in — falls back to a virtual "Piece" tier if the
@@ -58,10 +59,12 @@ class SaleController extends Controller
         $products->transform(function ($p) use ($branchId) {
             $p->branch_stock = $branchId ? $p->stockAtBranch($branchId) : $p->stock_qty;
             $p->unit_options = $p->units->count()
-                ? $p->units->map(fn ($u) => [
-                    "id" => $u->id, "name" => $u->unit->name ?? "Unit",
-                    "factor" => $u->conversion_factor, "sale_price" => $u->sale_price,
-                  ])
+                ? $p->units->map(fn($u) => [
+                    "id" => $u->id,
+                    "name" => $u->unit->name ?? "Unit",
+                    "factor" => $u->conversion_factor,
+                    "sale_price" => $u->sale_price,
+                ])
                 : collect([["id" => null, "name" => "Piece", "factor" => 1, "sale_price" => $p->sale_price]]);
             return $p;
         });
@@ -164,7 +167,7 @@ class SaleController extends Controller
                 $product->refresh();
                 if ($product->isLowStock()) {
                     \Illuminate\Support\Facades\Notification::send(
-                        \App\Models\User::whereHas("role", fn ($q) => $q->whereIn("slug", ["admin","manager"]))->get(),
+                        \App\Models\User::whereHas("role", fn($q) => $q->whereIn("slug", ["admin", "manager"]))->get(),
                         new LowStockAlert($product)
                     );
                 }
@@ -219,6 +222,19 @@ class SaleController extends Controller
                     $item->product->receiveBatch($sale->branch_id ?? \App\Models\Branch::main()?->id, $remaining, $item->purchase_price, $item->sale_price, null, null, null, $sale, "Restored from cancelled sale {$sale->invoice_no}");
                 }
                 $item->product->recalcStock();
+
+                // Log this as a proper "sale_return" movement so it shows up on the Sales Return report,
+                // regardless of whether the stock went back into an existing batch or a new one above.
+                $item->product->stockMovements()->create([
+                    "branch_id" => $sale->branch_id,
+                    "type" => "sale_return",
+                    "quantity" => $item->quantity,
+                    "stock_after" => $item->product->stock_qty,
+                    "reference_type" => \App\Models\Sale::class,
+                    "reference_id" => $sale->id,
+                    "created_by" => auth()->id(),
+                    "note" => "Sale returned: {$sale->invoice_no}",
+                ]);
             }
             $sale->update(["status" => "cancelled", "order_status" => "cancelled"]);
         });

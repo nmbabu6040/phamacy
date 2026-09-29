@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -15,9 +16,9 @@ class PurchaseController extends Controller
     public function index(Request $request)
     {
         $purchases = Purchase::with("supplier")
-            ->when($request->search, fn ($q) => $q->where("invoice_no", "like", "%{$request->search}%"))
-            ->when($request->from, fn ($q) => $q->whereDate("purchase_date", ">=", $request->from))
-            ->when($request->to, fn ($q) => $q->whereDate("purchase_date", "<=", $request->to))
+            ->when($request->search, fn($q) => $q->where("invoice_no", "like", "%{$request->search}%"))
+            ->when($request->from, fn($q) => $q->whereDate("purchase_date", ">=", $request->from))
+            ->when($request->to, fn($q) => $q->whereDate("purchase_date", "<=", $request->to))
             ->latest()->paginate(15)->withQueryString();
 
         return view("admin.purchases.index", compact("purchases"));
@@ -27,7 +28,7 @@ class PurchaseController extends Controller
     {
         return view("admin.purchases.create", [
             "suppliers" => Supplier::orderBy("name")->get(),
-            "products" => Product::with("units.unit")->orderBy("name")->get(["id","name","code","purchase_price","sale_price"]),
+            "products" => Product::with("units.unit")->orderBy("name")->get(["id", "name", "code", "purchase_price", "sale_price"]),
         ]);
     }
 
@@ -140,35 +141,39 @@ class PurchaseController extends Controller
         return $pdf->download("purchase-{$purchase->invoice_no}.pdf");
     }
 
+    /**
+     * "Returning" a purchase used to hard-delete the row, which destroyed all history and
+     * made a Purchase Return report impossible. Now it soft-cancels (status = cancelled) and
+     * reverses only the still-unsold stock from each batch, keeping the invoice for reporting.
+     */
     public function destroy(Purchase $purchase)
     {
         DB::transaction(function () use ($purchase) {
             foreach ($purchase->items as $item) {
-                // Remove the exact batch this purchase item created (if any units remain) and log the reversal.
                 $batch = \App\Models\ProductBatch::where("purchase_item_id", $item->id)->first();
-                if ($batch) {
+                if ($batch && $item->product) {
                     $sold = $batch->initial_quantity - $batch->quantity;
+                    $returnedQty = $batch->quantity; // only what is still in stock can actually go back
                     $batch->delete();
-                    if ($item->product) {
-                        $item->product->stockMovements()->create([
-                            "branch_id" => $purchase->branch_id,
-                            "type" => "adjustment",
-                            "quantity" => -1 * $batch->initial_quantity,
-                            "stock_after" => $item->product->stock_qty,
-                            "reference_type" => Purchase::class,
-                            "reference_id" => $purchase->id,
-                            "created_by" => auth()->id(),
-                            "note" => "Reversed purchase {$purchase->invoice_no}" . ($sold > 0 ? " ({$sold} units of this batch were already sold)" : ""),
-                        ]);
-                        $item->product->recalcStock();
-                    }
+
+                    $item->product->stockMovements()->create([
+                        "branch_id" => $purchase->branch_id,
+                        "type" => "purchase_return",
+                        "quantity" => -1 * $returnedQty,
+                        "stock_after" => $item->product->stock_qty,
+                        "reference_type" => Purchase::class,
+                        "reference_id" => $purchase->id,
+                        "created_by" => auth()->id(),
+                        "note" => "Purchase returned: {$purchase->invoice_no}" . ($sold > 0 ? " ({$sold} units of this batch were already sold and could not be returned)" : ""),
+                    ]);
+                    $item->product->recalcStock();
                 }
             }
-            $purchase->delete();
+            $purchase->update(["status" => "cancelled"]);
         });
 
-        ActivityLog::record("deleted", "Purchase", "Deleted purchase {$purchase->invoice_no}");
+        ActivityLog::record("cancelled", "Purchase", "Returned purchase {$purchase->invoice_no} to supplier");
 
-        return redirect()->route("admin.purchases.index")->with("success", "Purchase deleted and its stock batches reversed.");
+        return redirect()->route("admin.purchases.index")->with("success", "Purchase returned — unsold stock reversed, invoice kept for reporting.");
     }
 }
