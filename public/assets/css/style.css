@@ -67,6 +67,10 @@ a {
     display: inline-block;
 }
 
+.topbar-strip .dropdown-menu {
+    z-index: 1050; /* navbar এর sticky z-index (1020) এর চেয়ে বেশি */
+}
+
 /* Navbar */
 .main-navbar {
     background: #fff;
@@ -85,74 +89,6 @@ a {
 }
 
 /* Hero slider */
-/* .hero-slider .swiper-slide {
-    height: 560px;
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    align-items: center;
-}
-.hero-content {
-    max-width: 620px;
-}
-.hero-slider .swiper-button-next,
-.hero-slider .swiper-button-prev {
-    color: #fff;
-} */
-
-/* =========================
-   Hero Slider
-========================= */
-
-/* .hero-slider {
-    width: 100%;
-    height: 560px;
-    overflow: hidden;
-}
-
-.hero-slider .heroSwiper {
-    width: 100%;
-    height: 100%;
-}
-
-.hero-slider .swiper-wrapper {
-    height: 100%;
-}
-
-.hero-slider .swiper-slide {
-    width: 100%;
-    height: 560px;
-
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-
-    display: flex;
-    align-items: center;
-}
-
-.hero-content {
-    max-width: 620px;
-}
-
-.hero-slider .swiper-button-next,
-.hero-slider .swiper-button-prev {
-    color: #000;
-}
-
-@media (max-width: 768px) {
-    .hero-slider {
-        height: 500px;
-    }
-
-    .hero-slider .swiper-slide {
-        height: 500px;
-    }
-
-    .hero-content {
-        max-width: 90%;
-    }
-} */
 
 .hero-slider {
     width: 100%;
@@ -190,6 +126,16 @@ a {
 .heroSwiper .swiper-button-next::after,
 .heroSwiper .swiper-button-prev::after {
     font-size: 20px;
+}
+
+::slotted(svg),
+svg {
+    height: 50%;
+    object-fit: contain;
+    transform-origin: center;
+    width: 100%;
+    fill: currentColor;
+    pointer-events: none;
 }
 
 .heroSwiper .swiper-pagination-bullet {
